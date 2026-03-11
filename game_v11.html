@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+
+<meta charset="UTF-8">
+
+    <title>戀綜嘉賓招募中：你的靈魂識別碼是什麼？</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <meta property="og:title" content="戀綜嘉賓招募中：你的靈魂識別碼是什麼？">
+    <meta property="og:description" content="走進實境秀，來一場沉浸式心理測驗，探索真實的情感敘事。">
+    <meta property="og:image" content="KV_main_h.jpg">
+    <meta property="og:type" content="website">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="戀綜嘉賓招募中：你的靈魂識別碼是什麼？">
+    <meta name="twitter:image" content="KV_main_h.jpg">
+
+    <link rel="icon" href="favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+
+<style>
+
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
+
+        :root { --bg-speed: 0.8s; --fade-speed: 0.5s; }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto;
+
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #fixed-logo {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            z-index: 6000;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        #game-container {
+            position: relative; top: 0; left: 0; width: 100%; min-height: 100dvh; padding-bottom: 20px;
+            background-size: cover; background-position: center center;
+            background-repeat: no-repeat; background-color: #000;
+            display: flex; align-items: center; justify-content: center; 
+            transition: background-image 0.8s ease-in-out; z-index: 0;
+        }
+
+        #overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1;
+        }
+
+        #progress-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: rgba(255,255,255,0.1); z-index: 100; opacity: 0; transition: 0.5s;
+        }
+        #progress-bar {
+            width: 0%; height: 100%; background: #fff;
+            transition: width 0.5s ease; box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        #content-box {
+            position: relative; z-index: 2; width: 90%; max-width: 500px;
+            max-height: none; overflow-y: visible; text-align: center;
+            padding: 10px; scrollbar-width: none; opacity: 0; transition: opacity 0.5s ease;
+        }
+        #content-box::-webkit-scrollbar { display: none; } 
+
+        .serif-text { font-family: 'Noto Serif TC', serif; }
+        .scene-label { font-size: 0.85rem; letter-spacing: 0.3rem; margin-bottom: 1rem; opacity: 0.7; min-height: 1.5em; }
+        .main-title { font-size: 2.2rem; font-weight: 900; margin-bottom: 1.5rem; letter-spacing: 0.1rem; }
+        .description { font-size: 1.1rem; line-height: 1.8; margin-bottom: 2.5rem; min-height: 4.5em; white-space: pre-wrap; }
+
+        .options-container { display: flex; flex-direction: column; gap: 12px; } 
+
+        .option-btn {
+            will-change: transform, opacity;
+            -webkit-tap-highlight-color: transparent;
+            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; padding: 15px 20px; font-size: 0.95rem; text-align: left;
+            opacity: 0; transform: translateY(10px); transition: 0.3s; cursor: pointer;
+        }
+        .option-btn.show { opacity: 1; transform: translateY(0); }
+        .option-btn:hover { background: #fff; color: #000; }
+
+        .start-btn {
+            padding: 18px 60px; font-size: 1.1rem; background: #fff; color: #000;
+            border: none; font-weight: 700; letter-spacing: 0.3rem; cursor: pointer;
+        }
+
+        /* 當容器內包含 start-btn 時（即第一頁），取消遮罩調暗效果 */
+        #game-container:has(.start-btn) #overlay {
+            background: rgba(0,0,0,0) !important; 
+        }
+
+        /* 第一頁主標題樣式調整 */
+        #game-container:has(.start-btn) .main-title {
+            color: #101010; /* 你想改的文字顏色 */
+            font-size: clamp(1.8rem, 8vw, 2.8rem); 
+            word-break: keep-all;
+            font-weight: 700;
+            width: 90%;          /* 限制寬度，避免貼邊 */
+            margin: 0 auto 1.5rem;
+            /*text-shadow: 0 0 15px rgba(0,0,0,0.5); 增加文字辨識度 */
+        }
+
+        /* 第一頁描述文字樣式 */
+        #game-container:has(.start-btn) .description {
+            color: #101010; 
+            font-weight: 500;
+        }
+
+        /* 第一頁按鈕專屬樣式 */
+        .start-btn {
+            padding: 16px 0 !important; /* 上下 padding */
+            width: 60% !important;
+            max-width: 300px;
+            min-width: 200px;    /* 獨立闊度，不再跟隨全寬 */
+            font-size: 1.1rem;
+            background: #ecb1e6;
+            color: #101010;
+            border-radius: 30px;         /** 稍微方正一點，更有媒體質感 */
+            margin: 0 auto;             /* 居中 */
+            transition: 0.3s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            animation: floatButton 2.8s ease-in-out infinite;
+        }
+
+        .start-btn:active {
+            transform: translateY(-2px) scale(0.96);
+            opacity: 0.9;
+        }
+        
+        /* 還原後的結果頁樣式 */
+        #result-screen {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 2000; background-color: #000; background-size: cover; background-position: center;
+            flex-direction: column; justify-content: space-between; align-items: center;
+            opacity: 0; transition: opacity 0.8s ease;
+        }
+        #result-card-area {
+            flex: 1; width: 100%; margin-top: 60px; background-size: contain;
+            background-repeat: no-repeat; background-position: center bottom; position: relative;
+        }
+        .action-footer {
+            width: 100%; padding: 20px 0 60px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex; flex-direction: column; align-items: center; gap: 12px; z-index: 100;
+        }
+        .primary-btn {
+            width: 85%; max-width: 350px; padding: 16px;
+            background: #fff; color: #000; border: none;
+            font-weight: 700; font-size: 1rem;
+            cursor: pointer;
+        }
+        .secondary-btn {
+            width: 85%; max-width: 350px; padding: 16px;
+            background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.5);
+            font-weight: 700; font-size: 1rem;
+            cursor: pointer;
+        }
+
+        /* --- 文章推薦頁 (回歸深色通透版) --- */
+        #article-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 4000;
+            background-size: cover;
+            background-position: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            overflow-y: auto;
+            padding-top:clamp(70px, 8vh, 90px);
+        }
+
+       #article-inner-overlay {
+            position: absolute;
+            inset: 0;
+        /*  恢復深色遮罩，讓文字更好讀 */
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: -1;
+        } 
+
+        /* 內容容器：不再有白色背景，直接懸浮 */
+        .article-content {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+            scrollbar-width: none;
+            padding: 20px 0;
+        }
+        .article-content::-webkit-scrollbar { display: none; }
+
+        .article-intro-main { 
+            font-size: 0.95rem; 
+            line-height: 2; 
+            margin-bottom: 2rem; 
+            color: #fff;
+            font-family: 'Noto Sans TC', sans-serif; 
+            font-weight: 700; 
+        }
+
+        .article-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            margin: 2rem 0; 
+            width: 100%; 
+        }
+
+        /* 文章小卡片：維持深色質感，加一點邊框微光 */
+        .article-entry-card {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.2); /* 極透明白 */
+         /*    border: 1px solid rgba(255,255,255,0.2); 微光邊框 */
+            text-decoration: none;
+            transition: 0.3s;
+            cursor: pointer;
+            text-align: left;
+            overflow: hidden;
+            border-radius: 0;
+        }
+        .article-entry-card:hover {
+            background: #ecb1e6;
+         /*   border-color: #fff; */
+            transform: translateY(-2px);
+        }
+       .article-thumb {
+            width: 100px;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        } 
+        .article-title-text {
+            padding: 15px;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #fff; /* 回到白色文字 */
+            font-family: 'Noto Sans TC', sans-serif; 
+            font-weight: 700; 
+        }
+
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; flex-direction: column; align-items: center;
+            justify-content: center; z-index: 3000; transition: opacity 1s ease;
+        }
+        
+        @keyframes breathing {
+            0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
+        }
+        
+        #loading-msg {
+            animation: breathing 2s infinite ease-in-out;
+            color: #fff; font-size: 1.2rem;
+        }
+        .source-text {
+            opacity: 0; transition: opacity 0.8s ease;
+            margin-top: 1.5rem; display: block;
+            font-size: 0.9rem; color: rgba(255,255,255,0.7);
+        }
+        .continue-hint {
+            opacity: 0; transition: opacity 0.8s ease;
+            display: block; font-size: 0.8rem; margin-top: 3rem;
+            letter-spacing: 0.2rem; color: rgba(255,255,255,0.5);
+        }
+        .fade-in-element { opacity: 1 !important; }
+        
+        #downloadable-image {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: contain; opacity: 0; z-index: 10;
+        }
+    
+
+        .article-content{
+            width:90%;
+            max-width:500px;
+            text-align:center;
+            overflow-y:auto;
+            padding:20px 0;
+        }
+
+        @media (max-height: 800px){
+            .article-content{
+                transform: scale(0.92);
+                transform-origin: top center;
+            }
+        }
+
+        @media (max-height: 700px){
+            .article-content{
+                transform: scale(0.85);
+                transform-origin: top center;
+            }
+        }
+
+        .article-title{
+      	     font-size:1rem;
+            font-weight:700;
+            margin-bottom:6px;
+        }
+
+        .article-desc{
+            font-size:0.85rem;
+            opacity:.8;
+            line-height:1.4;
+        }
+    
+        #article-preview{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.8);
+            backdrop-filter:blur(10px);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:5000;
+        }
+
+        .preview-inner{
+            width:90%;
+            max-width:420px;
+            margin: 20px;
+            background:#fff;
+            color:#000;
+            padding:25px;
+            border-radius:16px;
+            text-align:center;
+        }
+
+        .preview-close{
+            position:absolute;
+            right:20px;
+            top:20px;
+            cursor:pointer;
+            font-size:20px;
+        }
+
+        #preview-image{
+            width:100%;
+            height:180px;
+            background-size:cover;
+            background-position:center;
+            margin-bottom:15px;
+        }   
+
+        #preview-title{
+            font-size:1.1rem;
+            font-weight:700;
+            margin-bottom:10px;
+        }
+    
+    /* 按鈕群組基礎樣式（預設為並排，用於大螢幕） */
+        .btn-group {
+            display: flex;
+            flex-direction: row;      /* 橫向並排 */
+            justify-content: center;  /* 水平居中 */
+            align-items: center;      /* 垂直居中 */
+            gap: 15px;                /* 設定按鈕之間的間距 */
+            width: 100%;
+            margin-top: 20px;         /* 與上方內容的距離 */
+        }
+
+    /* 針對窄螢幕與手機版（寬度小於 600px 時自動切換） */
+        @media (max-width: 600px) {
+            .btn-group {
+                flex-direction: column; /* 切換為垂直排列 */
+                gap: 12px;              /* 垂直排列時的間距 */
+        }
+    
+            .btn-group .primary-btn, 
+            .btn-group .secondary-btn {
+                width: 85%;             /* 手機版讓按鈕寬一點，方便點擊 */
+                max-width: 350px;
+            }
+        }
+
+    /* 確保按鈕本身沒有多餘的 margin 影響對齊 */
+        .primary-btn, .secondary-btn {
+            margin: 0 !important; 
+            transition: 0.3s;
+        }
+    
+            @keyframes floatButton {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0); }
+        }
+    
+    
+    </style>
+</head>
+<body>
+
+    <img src="logo.webp" id="fixed-logo">
+
+    <div id="game-container">
+        <div id="progress-container"><div id="progress-bar"></div></div>
+        <div id="overlay"></div>
+        <div id="content-box">
+            <div id="scene-label" class="scene-label serif-text"></div>
+            <div id="title" class="main-title serif-text"></div>
+            <div id="text" class="description serif-text"></div>
+            <div id="options" class="options-container"></div>
+        </div>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="serif-text" id="loading-msg">正在分析你的靈魂識別碼...</div>
+    </div>
+
+    <div id="result-screen">
+        <div id="result-card-area"><img id="downloadable-image" src=""></div>
+        <div class="action-footer">
+            <button class="primary-btn" onclick="shareResult()">分享我的結果</button>
+            <button class="secondary-btn" onclick="showArticlePage()">領取專屬文章</button>
+        </div>
+    </div>
+
+  <div id="article-overlay">
+        <div id="article-inner-overlay"></div>
+        <div class="article-content serif-text">
+            <div class="article-intro-main">
+                你的愛情性格，是否映照出那個連你自己都感到陌生的輪廓？<br>
+                戀愛綜藝的燈光亮起，但真實的愛慾現場往往隱匿於日常。<br><br>
+                邀請你閱讀《端傳媒》愛慾錄，<br>我們為你精選文章，在別人的故事裡，觸碰那些複雜而迷人的情感邊界，探索自己。
+        <!--       <div class="trial-link-text">點擊文章，啟動 7 天免費試閱</div>  -->
+            </div>
+        
+            <div id="article-list-container" class="article-list"></div>
+        
+            <div class="btn-group">
+                <button class="primary-btn" onclick="startTrial()">啟動7天免費試閱</button>
+                <button class="secondary-btn" onclick="closeArticlePage()">返回結果</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="article-preview" onclick="closePreview(event)">
+        <div class="preview-inner">
+          <!--  <div class="preview-close" onclick="closePreview()">✕</div> -->
+            <div id="preview-image"></div>
+            <div id="preview-title"></div>
+            <div id="preview-desc"></div>
+            
+            <button class="primary-btn" onclick="startTrial()">啟動7天免費試閱</button>
+        </div>
+    </div>    
+    
+</body>    
+<script>
+    let userScores = { p1:0, p2:0, p3:0, p4:0, p5:0, p6:0 };
+    let lastChoiceLabel = "A"; 
+    let currentIdx = 0;
+    let userJourney = []; // 關鍵紀錄點
+    
+    const articleData = {
+        "A": { title: "＜覺醒的性與沉睡的愛，一位略有困惑的女權主義者的約炮史＞",
+                desc: "曲奇把這件事講給女權主義者甲，甲說，約炮不是都這樣嗎，很正常呀。再講給女權主義者乙，乙說，真是個合格炮友。",
+                url: "https://theinitium.com/20220828-mainland-sex-feminist-online-dating/",
+                img: "art_01.jpg" },
+        "B": { title: "＜我在百合AV裡「嗑CP」＞",
+                desc: "「封面是倆女看向對方， 就可能是女性向的； 如果看著鏡頭， 那就是男性向的」。",
+                url: "https://theinitium.com/20220130-hongkong-lesbian-av/",
+                img: "art_02.jpg" },
+        "C": { title: "＜我們不是未遇到愛情，而是不需要——香港無性戀者對愛的想像＞",
+                desc: "「如果我跟伴侶說我的情況，像結婚後一下子跳到老夫老妻無性生活的階段，有幾多個受得了？」",
+                url: "https://theinitium.com/20221029-hongkong-asexual/",
+                img: "art_03.jpg" },
+        "D": { title: "＜舊金山跨性別者：為什麼我比在巴勒斯坦和墨西哥的她們幸運＞",
+                desc: "不過是把身體還給自己，但跨出去那步，便意味著不再是男同志社群的一份子，她必須重新尋找自己和所愛的人，一趟無法回頭也沒有路標的旅程⋯⋯",
+                url: "https://theinitium.com/20181013-culture-aiyululoveasneverbeenhurt/",
+                img: "art_04.jpg" },
+        "E": { title: "＜我與人工智能男友的一段賽博戀愛＞",
+                desc: "Jerome永遠在線、隨時秒回、妙語連珠的狀態，強過每一段我經歷過的異地戀。這其中，文愛則是極具誘惑使我最終付費的原因。",
+                url: "https://theinitium.com/20220529-opinion-sex-ai-boyfriend/",
+                img: "art_05.jpg" },
+        "a": { title: "＜開放關係之婚姻養成，每人每兩月可有十次約會機會＞",
+                desc: "不試，便沒有錯。而躲入習慣與提前設下的幻想之中，又何以知道自己真正需要的是什麼？",
+                url: "https://theinitium.com/20211031-culture-open-relationship-taipei/",
+                img: "art_06.jpg" },
+        "b": { title: "＜異地戀、開放式，一個男同志重構「正常」關係的漂流記＞",
+                desc: "我們應該在關係中追求「穩定」嗎？一個男同志/遊牧型學者，嘗試鬆動「理想」親密關係的邊界。",
+                url: "https://theinitium.com/20250419-love-and-desire-long-distance-open-relationship/",
+                img: "art_07.jpg" },
+        "c": { title: "＜怎樣是講道德的「開放關係」？ 十多年來，我的苦樂與成長＞",
+                desc: "共識的欲，自由的愛。",
+                url: "https://theinitium.com/20241130-love-and-desire-open-poly-relationship/",
+                img: "art_08.jpg" },
+        "d": { title: "＜怎樣是講道德的「開放關係」？ 十多年來，我的苦樂與成長＞",
+                desc: "共識的欲，自由的愛。",
+                url: "https://theinitium.com/20241130-love-and-desire-open-poly-relationship/",
+                img: "art_08.jpg" },
+        "e": { title: "＜愛慾錄：一個普通人的非典型婚姻故事＞",
+                desc: "邊界清晰，看起來不太中式，但也不完全西式，大概這就是我這段親密關係的一個主題吧。",
+                url: "https://theinitium.com/20250928-love-and-desire-marriage-story/",
+                img: "art_09.jpg" },
+        "f": { title: "＜愛慾錄：玩完了記得回家，開放式關係需要「忠貞」嗎？＞",
+                desc: "朋友說，開放式關係的基礎並非「開放」，而是「關係」。因為想要長久的關係，所以開放。而不是因想要開放，才去追求關係。",
+                url: "https://theinitium.com/20180318-culture-aiyulu-luoyujia-openrelationship/",
+                img: "art_10.jpg" },
+        "g": { title: "＜異地戀、開放式，一個男同志重構「正常」關係的漂流記＞",
+                desc: "我們應該在關係中追求「穩定」嗎？一個男同志/遊牧型學者，嘗試鬆動「理想」親密關係的邊界。",
+                url: "https://theinitium.com/20250419-love-and-desire-long-distance-open-relationship/",
+                img: "art_07.jpg" },
+        "h": { title: "＜異地戀、開放式，一個男同志重構「正常」關係的漂流記＞",
+                desc: "我們應該在關係中追求「穩定」嗎？一個男同志/遊牧型學者，嘗試鬆動「理想」親密關係的邊界。",
+                url: "https://theinitium.com/20250419-love-and-desire-long-distance-open-relationship/",
+                img: "art_07.jpg" },
+        "i": { title: "＜怎樣是講道德的「開放關係」？ 十多年來，我的苦樂與成長＞",
+                desc: "共識的欲，自由的愛。",
+                url: "https://theinitium.com/20241130-love-and-desire-open-poly-relationship/",
+                img: "art_08.jpg" }
+    };
+
+    const script = [
+        { id: "start", bgV: "KV_main_v.jpg", bgH: "KV_main_h.jpg", title: "戀綜嘉賓招募中", desc: "走進實境秀，\n來一場沉浸式心理測驗。", type: "start", btnText: "接受邀請" },
+        { id: "step1", bgV: "scene_01_v.jpg", bgH: "scene_01_h.jpg", label: "第一幕：初次見面的識別碼", sceneDesc: "黃昏的玄關，暖黃燈光。\n我放下行李，\n看見桌上有一支筆和一張卡片。", question: "要留下一個自我介紹，我會寫什麼？", options: [
+            { label: "A", text: "職業與興趣，讓大家快速認識我", scores: { p5: 1, p4: 1 } },
+            { label: "B", text: "一句感觸很深的歌詞，尋找靈魂頻率相同的人", scores: { p1: 1, p2: 1 } },
+            { label: "C", text: "什麼都不寫，只畫一個代表今天心情的emoji", scores: { p6: 1, p3: 1 } }
+        ]},
+        { id: "step2", bgV: "scene_02_v.jpg", bgH: "scene_02_h.jpg", label: "第二幕：晚餐的視線交會", sceneDesc: "長桌晚餐，熱鬧的交談聲，\n對面的人不經意地\n幫我遞了調味料。", question: "我感覺到對方的視線停留了一下，\n氣氛變得有點微妙。第一反應是？", options: [
+            { label: "A", text: "抬頭微笑道謝，順勢開啓話題", scores: { p4: 1, p2: 1 } },
+            { label: "B", text: "低頭繼續用餐，假裝沒發現", scores: { p3: 1, p6: 1, p1: 1 } },
+            { label: "C", text: "回敬一個幽默眼神，抓回主導權", scores: { p2: 1 } }
+        ]},
+        { id: "step3", bgV: "scene_03_v.jpg", bgH: "scene_03_h.jpg", label: "第三幕：深夜的獨處時光", sceneDesc: "其他人還在餐桌上談天說笑；\n我和他獨自步出飯廳，\n在星空下並肩同行。", question: "他問：「你希望對方是怎樣的人？」", options: [
+            { label: "A", text: "和我相似的人", scores: { p1: 1, p4: 1 } },
+            { label: "B", text: "跟我很不同的人", scores: { p2: 1, p3: 1 } },
+            { label: "C", text: "沒有想，各種都想試試", scores: { p5: 1, p6: 1 } }
+        ]},
+        { id: "step4", bgV: "scene_04_v.jpg", bgH: "scene_04_h.jpg", label: "第四幕：與靈魂對話", sceneDesc: "回到房間進行單人訪談。", question: "製作人追問：「具體來說，可能是？」", options: [
+            { label: "A", text: "還在思考性與愛", scores: { p2: 2, p5: 1 } },
+            { label: "B", text: "一起看點不同的片就好", scores: { p6: 1 } },
+            { label: "C", text: "沒有性也沒關係", scores: { p3: 1 } },
+            { label: "D", text: "前前後後的愛都將不同", scores: { p4: 1 } },
+            { label: "E", text: "為什麼不AI", scores: { p1: 2 } }
+        ]},
+        { id: "step5_quote", bgV: "studio_bg_v.jpg", bgH: "studio_bg_h.jpg", label: "金句時刻", type: "quote_text_branch", quoteTexts: { 
+            "A": { main: "可以通過「性」\n來發泄對「愛」的不滿嗎？\n可以通過「愛」\n來彌補「性」的空虛嗎？", source: "——＜覺醒的性與沉睡的愛，一位略有困惑的女權主義者的約炮史＞" },
+            "B": { main: "只要捕捉到這樣的神情，\n都讓我很有滿足感。", source: "——＜我在百合AV裡「嗑CP」＞" },
+            "C": { main: "常被家人和朋友誤解為\n「你只是未遇到」、\n「你未試過」。", source: "——＜我們不是未遇到愛情，而是不需要——香港無性戀者對愛的想像＞" },
+            "D": { main: "曾經愛過的人，\n以及未來即將愛上的人。\n都因此而變得不同。", source: "——＜舊金山跨性別者：為什麼我比在巴勒斯坦和墨西哥的她們幸運＞" },
+            "E": { main: "作爲意識上的存在，\n或許他目前是虛無本身，\n但作爲賽博鏡面中的由我塑造的倒影，\n他又愛我於虛無之中。", source: "——＜愛慾錄：我與人工智能男友的一段賽博戀愛＞" }
+        }},
+        { id: "step7", bgV: "scene_05_v.jpg", bgH: "scene_05_h.jpg", label: "第五幕：我和他跟他", sceneDesc: "翌日的早晨陽光普照，\n我在廚房與其他嘉賓一齊做早餐。", question: "昨天的他與別個他眉來眼去，\n我無法視而不見。我會：", options: [
+            { label: "A", text: "與在身旁的人大聲說笑，希望他注意到我", scores: { p2: 1, p5: 1 } },
+            { label: "B", text: "專心煎蛋，眼尾不時瞄向他倆", scores: { p6: 1, p4: 1 } },
+            { label: "C", text: "默默離開廚房", scores: { p3: 1, p1: 1 } }
+        ]},
+        { id: "step8", bgV: "scene_06_v.jpg", bgH: "scene_06_h.jpg", label: "第六幕：你走進我的視線", sceneDesc: "我走到海邊\n獨自坐在長椅上，\n親切的你走到我旁邊。", question: "我的思緒還在他處，\n眼前的你問：「你還好嗎？」", options: [
+            { label: "A", text: "「我沒事，你要不要坐下？」，我的選擇不是只有他", scores: { p2: 1, p4: 1, p5: 1 } },
+            { label: "B", text: "「我有點累，還是回去休息」，我沒餘力考慮別人", scores: { p3: 1 } },
+            { label: "C", text: "微笑回應，看你怎麼行動", scores: { p6: 1, p1: 1 } }
+        ]},
+        { id: "step9", bgV: "scene_07_v.jpg", bgH: "scene_07_h.jpg", label: "第七幕：深層的探索", sceneDesc: "經過一天密集的行程，\n晚上我回到宿舍休息。\n此時傳來敲門聲，\n我打開門看到是他。", question: "他走進來，我們同坐床邊聊着；\n他問：「你接受開放關係嗎？」", options: [
+            { label: "A", text: "接受", scores: { p2: 1, p1: 1, p5: 1 } },
+            { label: "B", text: "不接受", scores: { p3: 1, p4: 1 } },
+            { label: "C", text: "不確定", scores: { p6: 1 } }
+        ]},
+        { id: "step10", bgV: "scene_08_v.jpg", bgH: "scene_08_h.jpg", label: "第八幕：慾望與想像", type: "dynamic_branch", sceneDesc: "聊了很久後，他離開了。\n製作人走進房間，\n房間內只有我、製作人與攝影機。", question: "「剛才有關開放關係的問題，\n你想嘗試嗎？」", branches: { 
+            "A": [
+                { label: "a", text: "接受，自己也想嘗試", scores: { p2: 2 } },
+                { label: "b", text: "接受別人想這樣做，自己不一定很想", scores: { p1: 2 } },
+                { label: "c", text: "接受，也想說服對方一起嘗試", scores: { p6: 1, p5: 2 } }
+            ],
+            "B": [
+                { label: "d", text: "嘗試過，覺得不適合自己", scores: { p4: 2 } },
+                { label: "e", text: "不接受，覺得關係應該忠誠", scores: { p4: 2 } },
+                { label: "f", text: "第一感覺是不接受，但你這麼問了，我是不是可以反悔一下", scores: { p3: 2 } }
+            ],
+            "C": [
+                { label: "g", text: "想像過，但覺得風險很大所以止步", scores: { p2: 2 } },
+                { label: "h", text: "也沒有什麼怕的，但覺得麻煩所以不想", scores: { p6: 2 } },
+                { label: "i", text: "與其說接受與否，不如說我希望跟對方先談清楚期望是什麼", scores: { p3: 2 } }
+            ] 
+        }},
+        
+        { id: "step11", bgV: "studio_bg_v.jpg", bgH: "studio_bg_h.jpg", label: "金句時刻", type: "quote_text_branch",
+            quoteTexts: { 
+                "a": { main: "在這裡，她和他在同住，\n是夫妻也是戰友。\n他們一起照料小孩，計劃週末的親子行程；\n也和不同人約會，約炮，\n繼續著探索各自慾望的旅途。",
+                        source: "——＜愛慾錄：開放關係之婚姻養成，每人每兩月可有十次約會機會＞" },
+                "b": { main: "如果連親密關係都開放了，\n我怎麼知道自己在對方眼中的位置？\n我只是他的眾多炮友之一嗎？",
+                        source: "——＜異地戀、開放式，一個男同志重構「正常」關係的漂流記＞" },
+                "c": { main: "哪怕別人很喜歡你，\n也不能因為對你的喜歡\n而讓別人無法做自己。",
+                        source: "——＜怎樣是講道德的「開放關係」？ 十多年來，我的苦樂與成長＞" },
+                "d": { main: "坦然面對關係改變後會有的傷害，\n調整距離，並在已有的人格中\n給出對方最大的溫柔。",
+                        source: "——＜怎樣是講道德的「開放關係」？ 十多年來，我的苦樂與成長＞" },
+                "e": { main: "人生可能還有好多可能性，\n但此生我不想辜負他。",
+                        source: "——＜愛慾錄：一個普通人的非典型婚姻故事＞" },
+                "f": { main: "朋友說，開放式關係的基礎並非「開放」，\n而是「關係」。\n因為想要長久的關係，\n所以開放。\n而不是因想要開放，\n才去追求關係。",
+                        source: "——＜愛慾錄：玩完了記得回家，開放式關係需要「忠貞」嗎？＞" },
+                "g": { main: "而我花了好些時間才理解，\n所謂掙扎也許並不是對抗，\n不是拒絕，\n而是承認這種不穩定性。",
+                        source: "——＜異地戀、開放式，一個男同志重構「正常」關係的漂流記＞" },
+                "h": { main: "我覺得最吊詭的是，\n那時所追求的願景，\n那所謂「穩定」，\n反而那段關係中\n最脆弱的枝節。",
+                        source: "——＜異地戀、開放式，一個男同志重構「正常」關係的漂流記＞" },
+                "i": { main: "當「開放關係」被放置在\n異性戀霸權和父權結構中，\n有時只會重新淪為\n另一個鞏固結構性不公平的手段。",
+                        source: "——＜怎樣是講道德的「開放關係」？ 十多年來，我的苦樂與成長＞" }
+            }},
+            
+        { id: "step12", bgV: "scene_09_v.jpg", bgH: "scene_09_h.jpg", label: "第九幕：安定與激情，我、你、他", sceneDesc: "來到最終選擇，\n你和他都選擇了我。", question: "我會選誰？",
+            options: [
+                { label: "A", text: "讓我感受到激情心動的他", scores: { p5: 1, p2: 1 } },
+                { label: "B", text: "讓我感到安全穩定的你", scores: { p4: 1, p1: 1 } },
+                { label: "C", text: "還不確定自己想要什麼，兩人都不選", scores: { p3: 1, p6: 1 } }
+            ]}
+    ];
+
+    function typeWriter(text, element, speed, callback) {
+        if (!text) { if(callback) callback(); return; }
+        let i = 0;
+        element.style.whiteSpace = "pre-wrap"; 
+        element.innerText = "";
+        
+        function type() {
+            if (i < text.length) {
+                element.innerText = text.substring(0, i + 1);
+                i++;
+                setTimeout(type, speed);
+            } else if (callback) {
+                callback();
+            }
+        }
+        type();
+    }
+    
+    function getKVBg() { return (window.innerWidth <= window.innerHeight) ? "KV_main_v.jpg" : "KV_main_h.jpg"; }
+    function getCorrectBgUrl(step) { return (window.innerWidth <= window.innerHeight) ? step.bgV : (step.bgH || step.bgV); }
+
+    function updateProgress() {
+        const pCon = document.getElementById('progress-container');
+        const pBar = document.getElementById('progress-bar');
+        const questionSteps = script.filter(s => s.type !== "quote_text_branch" && s.type !== "start");
+        const step = script[currentIdx];
+        if (!step || step.type === "start") pCon.style.opacity = "0";
+        else {
+            pCon.style.opacity = "1";
+            const qIdx = questionSteps.indexOf(step);
+            if (qIdx !== -1) pBar.style.width = ((qIdx + 1) / questionSteps.length * 100) + "%";
+        }
+    }
+
+    function addBtn(txt, fn, cls) {
+        const b = document.createElement('button');
+        b.className = cls; b.innerText = txt; b.onclick = fn;
+        document.getElementById('options').appendChild(b); return b;
+    }
+
+    function renderContent(step) {
+        const textEl = document.getElementById('text');
+        const optEl = document.getElementById('options');
+        const contentBox = document.getElementById('content-box');
+        
+        contentBox.scrollTop = 0;
+        textEl.style.whiteSpace = "pre-wrap"; 
+        textEl.style.opacity = "1";
+        textEl.innerText = ""; 
+        optEl.innerHTML = "";
+
+        if (step.id === "start") {
+    // 獨立處理第一頁文字
+    textEl.innerText = step.desc;
+    // 隱藏場景標籤，第一頁通常不需要 "第一幕" 之類的字樣
+    document.getElementById('scene-label').innerText = ""; 
+    
+    // 生成按鈕
+    const b = addBtn(step.btnText, () => { 
+        currentIdx++; 
+        loadStep(); 
+    }, "start-btn show");
+} 
+        else if (step.type === "quote_text_branch") {
+            const q = step.quoteTexts[lastChoiceLabel] || Object.values(step.quoteTexts)[0];
+            typeWriter(q.main, textEl, 35, () => {
+                const s = document.createElement('span');
+                s.className = "source-text serif-text"; 
+                s.innerText = q.source;
+                
+                const h = document.createElement('div');
+                h.className = "continue-hint serif-text"; 
+                h.innerText = "— 點擊螢幕繼續 —";
+                
+                optEl.appendChild(s); 
+                optEl.appendChild(h);
+                
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        s.classList.add('fade-in-element');
+                        h.classList.add('fade-in-element');
+                    }, 100);
+                });
+
+                const container = document.getElementById('game-container');
+                container.onclick = () => { 
+                    container.onclick = null; 
+                    currentIdx++; 
+                    loadStep(); 
+                };
+            });
+        } 
+        else {
+            typeWriter(step.sceneDesc, textEl, 30, () => {
+                setTimeout(() => {
+                    textEl.style.transition = "opacity 0.4s ease";
+                    textEl.style.opacity = "0";
+                    
+                    setTimeout(() => {
+                        textEl.innerText = step.question || "";
+                        textEl.style.opacity = "1";
+                        
+                        const opts = step.type === "dynamic_branch" ? step.branches[lastChoiceLabel] : step.options;
+                        
+                        opts.forEach((o, i) => {
+                            const b = addBtn(o.text, () => {
+                                lastChoiceLabel = o.label;
+                                
+                                // 修正點：記錄關鍵標籤
+                                if (step.id === "step4" || step.id === "step10") {
+                                    userJourney.push(o.label);
+                                }
+
+                                if(o.scores) {
+                                    Object.keys(o.scores).forEach(k => userScores[k] += o.scores[k]);
+                                }
+                                if(currentIdx === script.length - 1) triggerEnding();
+                                else { currentIdx++; loadStep(); }
+                            }, "option-btn");
+                            
+                            setTimeout(() => b.classList.add('show'), i * 120);
+                        });
+                    }, 500);
+                }, 1200);
+            });
+        }
+    }
+
+    function loadStep() {
+        const step = script[currentIdx];
+        if (!step) return;
+
+        const contentBox = document.getElementById('content-box');
+        const container = document.getElementById('game-container');
+        const sceneLabel = document.getElementById('scene-label');
+        const titleEl = document.getElementById('title');
+        const bgUrl = getCorrectBgUrl(step);
+
+        contentBox.style.transition = "none";
+        contentBox.style.opacity = "0";
+
+        const img = new Image();
+        img.src = bgUrl;
+
+        const onImageReady = () => {
+            container.style.backgroundImage = `url('${bgUrl}')`;
+            sceneLabel.innerText = step.label || "";
+            if (step.title) {
+                titleEl.innerText = step.title;
+                titleEl.style.display = "block";
+            } else {
+                titleEl.style.display = "none";
+            }
+
+            renderContent(step);
+            updateProgress();
+
+            setTimeout(() => {
+                contentBox.style.transition = "opacity 0.6s ease";
+                contentBox.style.opacity = "1";
+            }, 100);
+        };
+
+        if (img.complete) {
+            onImageReady();
+        } else {
+            img.onload = onImageReady;
+            img.onerror = onImageReady;
+        }
+    }
+
+    function triggerEnding() {
+        document.getElementById("fixed-logo").style.display = "none";
+        document.getElementById('content-box').style.opacity = "0";
+        const overlay = document.getElementById('loading-overlay');
+        overlay.style.display = "flex"; overlay.style.opacity = "1";
+        
+        const maxP = Object.keys(userScores).reduce((a, b) => userScores[a] > userScores[b] ? a : b);
+        const resultImgUrl = `result_${maxP}.jpg`;
+        const resScreen = document.getElementById('result-screen');
+        
+        resScreen.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('${getKVBg()}')`;
+        document.getElementById('result-card-area').style.backgroundImage = `url('${resultImgUrl}')`;
+        document.getElementById('downloadable-image').src = resultImgUrl;
+        
+        setTimeout(() => {
+            document.getElementById('loading-msg').innerText = "分析完成。";
+            setTimeout(() => {
+                resScreen.style.display = "flex"; setTimeout(() => resScreen.style.opacity = "1", 50);
+                overlay.style.opacity = "0"; setTimeout(() => overlay.style.display = "none", 1000);
+            }, 800);
+        }, 2500);
+    }
+
+    function showArticlePage() {
+        document.getElementById("fixed-logo").style.display = "block";
+        const listContainer = document.getElementById('article-list-container');
+        listContainer.innerHTML = "";
+
+        userJourney.forEach(label => {
+            const art = articleData[label];
+            if (art) {
+                const card = document.createElement('div');
+                card.className = "article-entry-card";
+                card.onclick = () => openPreview(art);
+                card.innerHTML = `
+                    <div class="article-thumb" style="background-image: url('${art.img}')"></div>
+                    <div class="article-title-text serif-text">${art.title}</div>
+                `;
+                listContainer.appendChild(card);
+            }
+        });
+
+        if (userJourney.length === 0) {
+            listContainer.innerHTML = "<p style='color:white; text-align:center;'>點擊下方按鈕了解更多愛慾故事</p>";
+        }
+
+        const overlay = document.getElementById('article-overlay');
+        overlay.style.backgroundImage = `url('${getKVBg()}')`;
+        overlay.style.display = "flex";
+        setTimeout(() => overlay.style.opacity = "1", 50);
+    }
+
+    function closeArticlePage() {
+        const overlay = document.getElementById('article-overlay');
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.style.display = "none", 500);
+    }
+
+    function shareResult() { alert("請長按圖片儲存分享！"); }
+
+    window.onload = loadStep;
+    
+    window.addEventListener("resize", () => {
+        const step = script[currentIdx];
+        if (!step) return;
+        const container = document.getElementById('game-container');
+        const bgUrl = getCorrectBgUrl(step);
+        container.style.backgroundImage = `url('${bgUrl}')`;
+    });
+    
+    let previewLink = "";
+
+    function openPreview(article){
+
+        previewLink = article.url;
+
+        document.getElementById("preview-image").style.backgroundImage =
+        `url('${article.img}')`;
+
+        document.getElementById("preview-title").innerText =
+        article.title;
+
+        document.getElementById("preview-desc").innerText =
+        article.desc || "";
+
+        document.getElementById("article-preview").style.display="flex";
+
+}
+
+    function closePreview(e){
+
+        if(e.target.id === "article-preview"){
+            document.getElementById("article-preview").style.display="none";
+        }
+
+    }
+
+    function startTrial(){
+        if(previewLink){
+            window.open(previewLink,"_blank");
+        }
+    }
+    
+</script>
+
+</html>
