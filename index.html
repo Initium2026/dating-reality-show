@@ -59,10 +59,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* 改為從頂部開始排 */
+            justify-content: flex-start; 
             padding-top: clamp(80px, 12vh, 120px);
             padding-bottom: 50px;
-            min-height: 100;
             width: 100%;
             position: relative; top: 0; left: 0; width: 100%; min-height: 100dvh;
             padding-top: 60px; padding-bottom: 80px;
@@ -497,7 +496,7 @@
             100% { transform: translateY(0); }
         }
     
-}
+
     
     
     </style>
@@ -526,7 +525,7 @@
         <div class="action-footer">
             <div class="btn-group">
                 <button class="primary-btn" onclick="shareResult()">分享我的結果</button>
-                <button class="secondary-btn" onclick="showArticlePage()">前往領取專屬優惠</button>
+                <button class="secondary-btn" onclick="showArticlePage()">前往領取半價優惠</button>
             </div>
         </div>
     </div>
@@ -544,7 +543,7 @@
             <div id="article-list-container" class="article-list"></div>
         
             <div class="btn-group">
-                <button class="primary-btn" onclick="startTrial()">兌換首月4折優惠</button>
+                <button class="primary-btn" onclick="startTrial()">兌換首月半價優惠</button>
                 <button class="secondary-btn" onclick="closeArticlePage()">返回結果</button>
             </div>
             
@@ -558,12 +557,14 @@
             <div id="preview-title"></div>
             <div id="preview-desc"></div>
             
-            <button class="primary-btn" onclick="startTrial()">兌換首月4折優惠</button>
+            <button class="primary-btn" onclick="startTrial()">兌換首月半價優惠</button>
         </div>
     </div>    
     
 </body>    
 <script>
+    const FINAL_LANDING_URL = "https://theinitium.com/su5jvelvttaxmzlfugfpzcb0cmlhbf80nja5na-3d-3d";
+    let previewLink = "";
     let isQuestionPhase = false;
     let historyStack = [];
     let userScores = { p1:0, p2:0, p3:0, p4:0, p5:0, p6:0 };
@@ -631,7 +632,7 @@
     };
 
     const script = [
-        { id: "start", bgV: "KV_main_v.jpg", bgH: "KV_main_h.jpg", title: "戀綜嘉賓招募中", desc: "走進實境秀，\n來一場沉浸式心理測驗。", subDesc: "玩完遊戲，即可兌換白色情人節專屬首月4折優惠。", type: "start", btnText: "接受邀請" },
+        { id: "start", bgV: "KV_main_v.jpg", bgH: "KV_main_h.jpg", title: "戀綜嘉賓招募中", desc: "走進實境秀，\n來一場沉浸式心理測驗。", subDesc: "玩完遊戲，即可兌換白色情人節專屬首月5折優惠。", type: "start", btnText: "接受邀請" },
         { id: "step1", bgV: "scene_01_v.jpg", bgH: "scene_01_h.jpg", label: "第一幕：初次見面的識別碼", sceneDesc: "黃昏的玄關，暖黃燈光。\n我放下行李，\n看見桌上有一支筆和一張卡片。", question: "要留下一個自我介紹，我會寫什麼？", options: [
             { label: "A", text: "職業與興趣，讓大家快速認識我", scores: { p5: 1, p4: 1 } },
             { label: "B", text: "一句感觸很深的歌詞，尋找靈魂頻率相同的人", scores: { p1: 1, p2: 1 } },
@@ -818,9 +819,9 @@
         
         if (step.subDesc) {
         const subEl = document.createElement('div');
-        subEl.className = "start-sub-desc serif-text"; // 給它一個專屬的 class
+        subEl.className = "start-sub-desc serif-text"; 
         subEl.innerText = step.subDesc;
-        textEl.appendChild(subEl); // 把小字接在 desc 後面
+        textEl.appendChild(subEl); 
     }
 
     document.getElementById('scene-label').innerText = ""; 
@@ -846,16 +847,6 @@
             btnContainer.className = "action-buttons"; 
             optEl.appendChild(btnContainer);
 
-            if (q.url) { 
-                const readMoreBtn = document.createElement('button');
-                readMoreBtn.className = "secondary-btn show";
-                readMoreBtn.innerText = "閱讀全文";
-                readMoreBtn.onclick = () => {
-                    window.open(q.url, "_blank");
-                };
-                btnContainer.appendChild(readMoreBtn);
-            }
-            
             const nextBtn = document.createElement('button');
             nextBtn.className = "primary-btn show";
             nextBtn.innerText = "往下一幕";
@@ -865,6 +856,15 @@
             };
             btnContainer.appendChild(nextBtn);
 
+            if (q.url) { 
+                const readMoreBtn = document.createElement('button');
+                readMoreBtn.className = "secondary-btn show";
+                readMoreBtn.innerText = "閱讀全文";
+                readMoreBtn.onclick = () => {
+                    window.open(q.url, "_blank");
+                };
+                btnContainer.appendChild(readMoreBtn);
+            }
 
 
             requestAnimationFrame(() => {
@@ -1092,7 +1092,7 @@
                 }
             }catch(e){
                 if(isMobile){
-                    alert("分請長按圖片儲存分享");
+                    alert("請長按圖片儲存分享");
                 }else{
                     alert("請右鍵另存圖片");
                 }
@@ -1114,19 +1114,22 @@
 
         });
     
-    let previewLink = "";
+   // let previewLink = "";
 
-    function openPreview(article){
-        previewLink = article.url;
-        document.getElementById("preview-image").style.backgroundImage =
-        `url('${article.img}')`;
-        document.getElementById("preview-title").innerText =
-        article.title;
-        document.getElementById("preview-desc").innerText =
-        article.desc || "";
-        document.getElementById("article-preview").style.display="flex";
-
-}
+    function openPreview(article, isFinalResult = false) {
+        if (isFinalResult) {
+            previewLink = FINAL_LANDING_URL; // 如果是最後一頁，強制導向固定網址
+        } else {
+            previewLink = article.url; // 如果是金句頁，則使用文章原本的網址
+        }
+        
+        // 更新 UI 邏輯...
+        document.getElementById("preview-image").style.backgroundImage = `url('${article.img}')`; 
+        document.getElementById("preview-title").innerText = article.title;                     
+        document.getElementById("preview-desc").innerText = article.desc || "";
+        
+        document.getElementById("article-preview").style.display = "flex";
+    }
 
     function closePreview(e){
 
@@ -1137,8 +1140,8 @@
     }
 
     function startTrial(){
-        if(previewLink){
-            window.open(previewLink,"_blank");
+       {
+            window.open("https://theinitium.com/su5jvelvttaxmzlfugfpzcb0cmlhbf80nja5na-3d-3d", "_blank");
         }
     }
     
