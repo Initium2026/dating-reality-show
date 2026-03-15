@@ -525,7 +525,7 @@
         <div class="action-footer">
             <div class="btn-group">
                 <button class="primary-btn" onclick="shareResult()">分享我的結果</button>
-                <button class="secondary-btn" onclick="showArticlePage()">前往領取半價優惠</button>
+                <button class="secondary-btn" onclick="showArticlePage()">探索你的閱讀推薦</button>
             </div>
         </div>
     </div>
@@ -557,7 +557,7 @@
             <div id="preview-title"></div>
             <div id="preview-desc"></div>
             
-            <button class="primary-btn" onclick="startTrial()">兌換首月半價優惠</button>
+            <button class="primary-btn" onclick="readArticle()">試閱文章</button>
         </div>
     </div>    
     
@@ -1116,34 +1116,46 @@
     
    // let previewLink = "";
 
-    function openPreview(article, isFinalResult = false) {
-        if (isFinalResult) {
-            previewLink = FINAL_LANDING_URL; // 如果是最後一頁，強制導向固定網址
-        } else {
-            previewLink = article.url; // 如果是金句頁，則使用文章原本的網址
-        }
-        
-        // 更新 UI 邏輯...
-        document.getElementById("preview-image").style.backgroundImage = `url('${article.img}')`; 
-        document.getElementById("preview-title").innerText = article.title;                     
-        document.getElementById("preview-desc").innerText = article.desc || "";
-        
-        document.getElementById("article-preview").style.display = "flex";
+ function openPreview(article, isFinalResult = false){
+
+    if(!article) return;
+
+    if (isFinalResult) {
+        previewLink = FINAL_LANDING_URL;
+    } else {
+        previewLink = article.url;
     }
+
+    document.getElementById("preview-image").style.backgroundImage = `url('${article.img}')`; 
+    document.getElementById("preview-title").innerText = article.title;                     
+    document.getElementById("preview-desc").innerText = article.desc || "";
+
+    document.body.style.overflow = "hidden";
+
+    document.getElementById("article-preview").style.display = "flex";
+}
+
+
+    function readArticle(){
+
+        if(previewLink){
+            window.open(previewLink, "_blank");
+            }
+        }
+
 
     function closePreview(e){
 
-        if(e.target.id === "article-preview"){
-            document.getElementById("article-preview").style.display="none";
+    if(e.target.id === "article-preview"){
+        document.getElementById("article-preview").style.display="none";
+        document.body.style.overflow="";
+            }
         }
 
-    }
 
     function startTrial(){
-       {
-            window.open("https://theinitium.com/su5jvelvttaxmzlfugfpzcb0cmlhbf80nja5na-3d-3d", "_blank");
-        }
-    }
+        window.open("https://theinitium.com/su5jvelvttaxmzlfugfpzcb0cmlhbf80nja5na-3d-3d", "_blank");
+    }   
     
 </script>
 
